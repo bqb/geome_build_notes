@@ -1,0 +1,42 @@
+###  TLS cert  updates from ssls are requiring updated keys each year, as in no recycling of CSR from previous year
+### -- present herd: 2x in NL,  1x in  US, ZA, IN, ID
+geom.nl  
+geome.nl
+geomen.us  
+geomen.in
+geome.id  
+geome.co.za
+
+
+
+
+# create secp384r1  keys
+```
+openssl ecparam -name secp384r1 -genkey -rand /dev/urandom -noout -out id_geome_2023-07_384.key;
+openssl ecparam -name secp384r1 -genkey -rand /dev/urandom -noout -out in_geomen_2023-07_384.key;
+openssl ecparam -name secp384r1 -genkey -rand /dev/urandom -noout -out nl_geom_2023-07_384.key;
+openssl ecparam -name secp384r1 -genkey -rand /dev/urandom -noout -out nl_geome_2023-07_384.key;
+openssl ecparam -name secp384r1 -genkey -rand /dev/urandom -noout -out us_geomen_2023-07_384.key;
+openssl ecparam -name secp384r1 -genkey -rand /dev/urandom -noout -out com_ge0sys_2023-07_384.key;
+openssl ecparam -name secp384r1 -genkey -rand /dev/urandom -noout -out za_geomeco_2023-07_384.key
+
+```
+
+
+# generate new CSR using these new keys
+```
+openssl req -new -sha256 -key id_geome_2023-07_384.key   -config id_csr.conf  -out id_geome_2023-07.csr;
+openssl req -new -sha256 -key in_geomen_2023-07_384.key  -config in_csr.conf  -out in_geomen_2023-07.csr;
+openssl req -new -sha256 -key nl_geom_2023-07_384.key    -config nl1_csr.conf -out nl_geom_2023-07.csr;
+openssl req -new -sha256 -key nl_geome_2023-07_384.key   -config nl2_csr.conf -out nl_geome_2023-07.csr;
+openssl req -new -sha256 -key us_geomen_2023-07_384.key  -config us_csr.conf  -out us_geomen_2023-07.csr;
+openssl req -new -sha256 -key com_ge0sys_2023-07_384.key  -config com_csr.conf  -out com_ge0sys_2023-07.csr;
+openssl req -new -sha256 -key za_geomeco_2023-07_384.key -config za_csr.conf  -out za_geomeco_2023-07.csr
+
+```
+
+-- Getting from PKCS7 to fullchain cert via openssl
+openssl pkcs7 -print_certs -in blah_blah.p7b -out fullchain.crt
+
+# and when the certs come in, pack them with their keys in a PKCS12 using decent (and saved) passphrase
+openssl pkcs12 -export -in id_geome_2023-07.crt -inkey id_geome_2023-07_384.key -out id_geome_2023-07.p12 -name geome.id
